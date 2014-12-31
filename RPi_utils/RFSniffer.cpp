@@ -9,6 +9,17 @@
 #include "RCSwitch.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#include <netdb.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <arpa/inet.h> 
      
      
 RCSwitch mySwitch;
@@ -42,9 +53,52 @@ void int16_to_str(char* str,int x)
    byte_to_str(&str[9],lo);
 }
 
+void error(char *msg) {
+    perror(msg);
+    exit(0);
+}
+void sendData( int sockfd, char *buffer ) {
+  int n;
+
+  if ( (n = write( sockfd, buffer, strlen(buffer) ) ) < 0 )
+      error( const_cast<char *>( "ERROR writing to socket") );
+  buffer[0] = '\0';
+}
+int getData( int sockfd ) {
+  char buffer[32];
+  int n;
+
+  if ( (n = read(sockfd,buffer,31) ) < 0 )
+       error( const_cast<char *>( "ERROR reading from socket") );
+  buffer[n] = '\0';
+  return atoi( buffer );
+}
+
 
 int main(int argc, char *argv[]) {
   
+    int sockfd, portno = 51717, n;
+    char serverIp[] = "127.0.0.1";
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+    char buffer[256];
+    int data;
+
+  //--- set up data connection
+    if ( ( sockfd = socket(AF_INET, SOCK_STREAM, 0) ) < 0 )
+        error( const_cast<char *>( "ERROR opening socket") );
+
+    if ( ( server = gethostbyname( serverIp ) ) == NULL ) 
+        error( const_cast<char *>("ERROR, no such host\n") );
+    
+    bzero( (char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy( (char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+    serv_addr.sin_port = htons(portno);
+    if ( connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
+        error( const_cast<char *>( "ERROR connecting") );
+
+
      // This pin is not the first pin on the RPi GPIO header!
      // Consult https://projects.drogon.net/raspberry-pi/wiringpi/pins/
      // for more information.
@@ -56,13 +110,14 @@ int main(int argc, char *argv[]) {
      mySwitch = RCSwitch();
      mySwitch.enableReceive(PIN);  // Receiver on inerrupt 0 => that is pin #2
      
- //    char str[18];
+     char str[18];
      int fob_id, button_id;
 
      while(1) {
   
       if (mySwitch.available()) {
     
+        printf("Waiting for commands\n");
         int value = mySwitch.getReceivedValue();
     
         if (value == 0) {
@@ -72,7 +127,10 @@ int main(int argc, char *argv[]) {
           button_id=value&0x0f;
  //        int16_to_str(str,value);
  //         value = mySwitch.getReceivedValue();
-          printf("%i %i\n", fob_id,button_id);
+          sprintf(str,"%i %i", fob_id,button_id);
+          printf("sending command %s\n",str);
+       //   fflush(stdout);
+          sendData(sockfd,str);
         }
     
         mySwitch.resetAvailable();
