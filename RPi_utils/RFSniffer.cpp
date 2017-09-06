@@ -74,17 +74,59 @@ int getData( int sockfd ) {
   return atoi( buffer );
 }
 
+<<<<<<< HEAD
+static int sockfd, portno = 51717;
+static int standalone = 0;
+void receive_callback(int value) 
+{
+   int fob_id, button_id;
+   char str[64]; 
+    
+        if (value == 0) {
+          printf("Unknown encoding");
+        } else {    
+          fob_id = (value >> 4);
+          button_id=value&0x0f;
+          sprintf(str,"%i %i\n", fob_id,button_id);
+          printf("sending command %s\n",str);
+          if(!standalone)
+            sendData(sockfd,str);
+        }
+}
+      
+  
+
+int main(int argc, char *argv[]) {
+  
+=======
 
 int main(int argc, char *argv[]) {
   
     int sockfd, portno = 51717, n;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
     char serverIp[] = "127.0.0.1";
     struct sockaddr_in serv_addr;
     struct hostent *server;
     char buffer[256];
     int data;
 
+<<<<<<< HEAD
+    if( argc > 1) 
+      portno = atoi(argv[1]);
+    if(portno==0) {
+        if(!strcmp(argv[1],"-s")) {
+          printf("Running standalone");
+          standalone = 1;
+        }else{
+          error( const_cast<char *>( "Usage: RFSniffer [-s|<portno]") );
+        }
+    }
+
   //--- set up data connection
+    if(!standalone) {
+=======
+  //--- set up data connection
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
     if ( ( sockfd = socket(AF_INET, SOCK_STREAM, 0) ) < 0 )
         error( const_cast<char *>( "ERROR opening socket") );
 
@@ -97,6 +139,10 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_port = htons(portno);
     if ( connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
         error( const_cast<char *>( "ERROR connecting") );
+<<<<<<< HEAD
+    }
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 
 
      // This pin is not the first pin on the RPi GPIO header!
@@ -109,11 +155,20 @@ int main(int argc, char *argv[]) {
 
      mySwitch = RCSwitch();
      mySwitch.enableReceive(PIN);  // Receiver on inerrupt 0 => that is pin #2
+<<<<<<< HEAD
+     mySwitch.setReceiveCallback(receive_callback);
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
      
      char str[18];
      int fob_id, button_id;
 
      while(1) {
+<<<<<<< HEAD
+      if(standalone) 
+        printf("Waiting for commands\n");
+      sleep(10);
+=======
   
       if (mySwitch.available()) {
     
@@ -137,6 +192,7 @@ int main(int argc, char *argv[]) {
     
       }
       
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
   
   }
 

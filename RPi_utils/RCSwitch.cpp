@@ -25,18 +25,35 @@
 */
 
 #include "RCSwitch.h"
+<<<<<<< HEAD
+#include <stdio.h>
+
+unsigned long NO_VALUE = 0;
+unsigned long RCSwitch::nReceivedValue = NO_VALUE;
+=======
 
 unsigned long RCSwitch::nReceivedValue = NULL;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 unsigned int RCSwitch::nReceivedBitlength = 0;
 unsigned int RCSwitch::nReceivedDelay = 0;
 unsigned int RCSwitch::nReceivedProtocol = 0;
 unsigned int RCSwitch::timings[RCSWITCH_MAX_CHANGES];
+<<<<<<< HEAD
+void (*RCSwitch::receiveCallback)(int) = NULL;
+int RCSwitch::nReceiveTolerance = 60; /* SvD:original 60 */
+unsigned int debugReceiveTolerance = 1;
+=======
 int RCSwitch::nReceiveTolerance = 60;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 
 RCSwitch::RCSwitch() {
   this->nReceiverInterrupt = -1;
   this->nTransmitterPin = -1;
+<<<<<<< HEAD
+  RCSwitch::nReceivedValue = NO_VALUE;
+=======
   RCSwitch::nReceivedValue = NULL;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
   this->setPulseLength(350);
   this->setRepeatTransmit(10);
   this->setReceiveTolerance(60);
@@ -443,8 +460,13 @@ void RCSwitch::enableReceive(int interrupt) {
 
 void RCSwitch::enableReceive() {
   if (this->nReceiverInterrupt != -1) {
+<<<<<<< HEAD
+    RCSwitch::nReceivedValue = NO_VALUE;
+    RCSwitch::nReceivedBitlength = NO_VALUE;
+=======
     RCSwitch::nReceivedValue = NULL;
     RCSwitch::nReceivedBitlength = NULL;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
     wiringPiISR(this->nReceiverInterrupt, INT_EDGE_BOTH, &handleInterrupt);
   }
 }
@@ -456,12 +478,24 @@ void RCSwitch::disableReceive() {
   this->nReceiverInterrupt = -1;
 }
 
+<<<<<<< HEAD
+void RCSwitch::setReceiveCallback(void (*function)(int)) {
+  RCSwitch::receiveCallback = function;
+}
+bool RCSwitch::available() {
+  return RCSwitch::nReceivedValue != NO_VALUE;
+}
+
+void RCSwitch::resetAvailable() {
+  RCSwitch::nReceivedValue = NO_VALUE;
+=======
 bool RCSwitch::available() {
   return RCSwitch::nReceivedValue != NULL;
 }
 
 void RCSwitch::resetAvailable() {
   RCSwitch::nReceivedValue = NULL;
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 }
 
 unsigned long RCSwitch::getReceivedValue() {
@@ -504,6 +538,12 @@ bool RCSwitch::receiveProtocol1(unsigned int changeCount){
             // Failed
             i = changeCount;
             code = 0;
+<<<<<<< HEAD
+            if(debugReceiveTolerance) {
+              printf("Failed on delayTolerance on count %d\n",i);
+            }
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
           }
       }      
       code = code >> 1;
@@ -560,6 +600,12 @@ bool RCSwitch::receiveProtocol2(unsigned int changeCount){
 
 void RCSwitch::handleInterrupt() {
 
+<<<<<<< HEAD
+  static unsigned long longTime=0;
+  static unsigned int longCount;
+
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
   static unsigned int duration;
   static unsigned int changeCount;
   static unsigned long lastTime;
@@ -568,6 +614,21 @@ void RCSwitch::handleInterrupt() {
   long time = micros();
   duration = time - lastTime;
 
+<<<<<<< HEAD
+  longCount++;
+  if(longTime == 0)
+    longTime = time;
+  else
+  if((time - longTime) > 1000000) {
+    if(longCount > 7000) {
+      printf("Warning: RCSwitch::handleInterrupt: Serious noise on the RF interrupt: %d calls in %d micros",longCount,(time-longTime));
+    }
+    longTime = time;
+    longCount = 1;
+  }
+
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
   if (duration > 5000 && duration > RCSwitch::timings[0] - 200 && duration < RCSwitch::timings[0] + 200) {    
     repeatCount++;
     changeCount--;
@@ -591,6 +652,13 @@ void RCSwitch::handleInterrupt() {
   }
   RCSwitch::timings[changeCount++] = duration;
   lastTime = time;  
+<<<<<<< HEAD
+  if(RCSwitch::nReceivedValue>0 && RCSwitch::receiveCallback != NULL) {
+        RCSwitch::receiveCallback(RCSwitch::nReceivedValue);
+        RCSwitch::nReceivedValue = NO_VALUE;
+  }
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 }
 
 /**

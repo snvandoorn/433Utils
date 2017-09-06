@@ -86,6 +86,10 @@ class RCSwitch {
     void setReceiveTolerance(int nPercent);
 	void setProtocol(int nProtocol);
 	void setProtocol(int nProtocol, int nPulseLength);
+<<<<<<< HEAD
+    static void setReceiveCallback(void (*function)(int));
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
   
   private:
     char* getCodeWordB(int nGroupNumber, int nSwitchNumber, boolean bStatus);
@@ -104,6 +108,10 @@ class RCSwitch {
     static void handleInterrupt();
 	static bool receiveProtocol1(unsigned int changeCount);
 	static bool receiveProtocol2(unsigned int changeCount);
+<<<<<<< HEAD
+    static void (*receiveCallback)(int code);
+=======
+>>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
     int nReceiverInterrupt;
     int nTransmitterPin;
     int nPulseLength;
