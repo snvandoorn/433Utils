@@ -74,7 +74,6 @@ int getData( int sockfd ) {
   return atoi( buffer );
 }
 
-<<<<<<< HEAD
 static int sockfd, portno = 51717;
 static int standalone = 0;
 void receive_callback(int value) 
@@ -96,21 +95,15 @@ void receive_callback(int value)
       
   
 
-int main(int argc, char *argv[]) {
-  
-=======
 
 int main(int argc, char *argv[]) {
   
-    int sockfd, portno = 51717, n;
->>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
     char serverIp[] = "127.0.0.1";
     struct sockaddr_in serv_addr;
     struct hostent *server;
     char buffer[256];
     int data;
 
-<<<<<<< HEAD
     if( argc > 1) 
       portno = atoi(argv[1]);
     if(portno==0) {
@@ -124,25 +117,19 @@ int main(int argc, char *argv[]) {
 
   //--- set up data connection
     if(!standalone) {
-=======
-  //--- set up data connection
->>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
-    if ( ( sockfd = socket(AF_INET, SOCK_STREAM, 0) ) < 0 )
+      if ( ( sockfd = socket(AF_INET, SOCK_STREAM, 0) ) < 0 )
         error( const_cast<char *>( "ERROR opening socket") );
 
-    if ( ( server = gethostbyname( serverIp ) ) == NULL ) 
+      if ( ( server = gethostbyname( serverIp ) ) == NULL ) 
         error( const_cast<char *>("ERROR, no such host\n") );
     
-    bzero( (char *) &serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    bcopy( (char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
-    serv_addr.sin_port = htons(portno);
-    if ( connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
-        error( const_cast<char *>( "ERROR connecting") );
-<<<<<<< HEAD
+      bzero( (char *) &serv_addr, sizeof(serv_addr));
+      serv_addr.sin_family = AF_INET;
+      bcopy( (char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+      serv_addr.sin_port = htons(portno);
+      if ( connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) 
+          error( const_cast<char *>( "ERROR connecting") );
     }
-=======
->>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
 
 
      // This pin is not the first pin on the RPi GPIO header!
@@ -155,45 +142,15 @@ int main(int argc, char *argv[]) {
 
      mySwitch = RCSwitch();
      mySwitch.enableReceive(PIN);  // Receiver on inerrupt 0 => that is pin #2
-<<<<<<< HEAD
      mySwitch.setReceiveCallback(receive_callback);
-=======
->>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
      
      char str[18];
      int fob_id, button_id;
 
      while(1) {
-<<<<<<< HEAD
       if(standalone) 
         printf("Waiting for commands\n");
       sleep(10);
-=======
-  
-      if (mySwitch.available()) {
-    
-        printf("Waiting for commands\n");
-        int value = mySwitch.getReceivedValue();
-    
-        if (value == 0) {
-          printf("Unknown encoding");
-        } else {    
-          fob_id = (value >> 4);
-          button_id=value&0x0f;
- //        int16_to_str(str,value);
- //         value = mySwitch.getReceivedValue();
-          sprintf(str,"%i %i", fob_id,button_id);
-          printf("sending command %s\n",str);
-       //   fflush(stdout);
-          sendData(sockfd,str);
-        }
-    
-        mySwitch.resetAvailable();
-    
-      }
-      
->>>>>>> e2682c360be511c4fd9877ca4350acb97bfb885b
-  
   }
 
   exit(0);
